@@ -74,6 +74,7 @@
         this[states[i]] = false;
       }
       this[state] = true;
+      riot.update();
     }
     switchToAddress(url){
       if (typeof me.socket!=='undefined'){

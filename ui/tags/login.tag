@@ -15,7 +15,8 @@
               type="text"
               class="form-control"
               placeholder="Login"
-              aria-describedby="basic-addon1">
+              aria-describedby="basic-addon1"
+              onkeypress={keypress}>
           </div>
 
           <div class="input-group">
@@ -26,7 +27,8 @@
               type="password"
               class="form-control"
               placeholder="Password"
-              aria-describedby="basic-addon1">
+              aria-describedby="basic-addon1"
+              onkeypress={keypress}>
           </div>
           <button type="button" class="btn btn-default" onclick={ submit } >Senden</button>
         <form>
@@ -34,13 +36,37 @@
     </div>
   </div>
   <script>
-    this.login = ""
-    this.password = ""
+    var inputOrder = ['login','password'];
+    var me = this;
+    me.login = ""
+    me.password = ""
     submit(e){
+      window.app.setState('wait');
       window.app.socket.emit('login',{
-        login: this.loginform.login.value,
-        password: this.loginform.password.value
+        login: me.loginform.login.value,
+        password: me.loginform.password.value
       })
+
     }
+
+    keypress(e){
+      var index;
+      if (e.which === 13){
+        index = inputOrder.indexOf(e.target.name);
+        if (index<inputOrder.length-1){
+          index++;
+        }else{
+          index=0;
+          me.submit(e);
+        }
+        me.loginform[inputOrder[index]].focus()
+      }
+      return true;
+      //console.log(e);
+    }
+
+    me.on('mount', function(eventName) {
+      me.loginform[inputOrder[0]].focus();
+    })
   </script>
 </login>

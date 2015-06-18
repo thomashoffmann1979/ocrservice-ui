@@ -30,6 +30,7 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
         this[states[i]] = false;
       }
       this[state] = true;
+      riot.update();
     }.bind(this);
     this.switchToAddress = function(url) {
       if (typeof me.socket!=='undefined'){
@@ -124,11 +125,11 @@ riot.tag('discovery', '<ul class="nav navbar-nav"> <li each="{ serviceList }" > 
   
 });
 
-riot.tag('letter', '<div class="col-md-12"> <div class="panel panel-success"> <div class="panel-heading"> <h3 class="panel-title">Sendung erfassen</h3> </div> <div class="panel-body"> <form id="letterform"> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">ID</span> <input id="id" value="{ current.id }" type="text" class="form-control" placeholder="ID" aria-describedby="basic-addon1"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">PLZ</span> <input id="zipCode" value="{ current.zipCode }" type="number" class="form-control" placeholder="PLZ" aria-describedby="basic-addon1"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Strasse</span> <input id="street" value="{ current.street }" type="text" class="form-control" placeholder="Strasse" aria-describedby="basic-addon1"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Hausnummer</span> <input id="housenumber" value="{ current.housenumber }" type="text" class="form-control" placeholder="Hausnummer" aria-describedby="basic-addon1"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Hausnummer Zusatz</span> <input id="housenumberExtension" value="{ current.housenumberExtension }" type="text" class="form-control" placeholder="Hausnummer" aria-describedby="basic-addon1"> </div> <button type="button" class="btn btn-default" onclick="{ submit }" >Senden</button> <button type="button" class="btn btn-default" onclick="{ skip }" >Skip</button> <form> </div> <div class="panel-footer"> <img class="letterimg" riot-src="{ current.inlineimage }"> </div> </div> </div>', function(opts) {
+riot.tag('letter', '<div class="col-md-12"> <div class="panel panel-success"> <div class="panel-heading"> <h3 class="panel-title">Sendung erfassen</h3> </div> <div class="panel-body"> <form id="letterform"> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">ID</span> <input name="id" value="{ current.id }" type="text" class="form-control" placeholder="ID" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">PLZ</span> <input name="zipCode" value="{ current.zipCode }" type="number" class="form-control" placeholder="PLZ" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Strasse</span> <input name="street" value="{ current.street }" type="text" class="form-control" placeholder="Strasse" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Hausnummer</span> <input name="housenumber" value="{ current.housenumber }" type="text" class="form-control" placeholder="Hausnummer" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Hausnummer Zusatz</span> <input name="housenumberExtension" value="{ current.housenumberExtension }" type="text" class="form-control" placeholder="Hausnummer" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <button type="button" class="btn btn-default" onclick="{ submit }" >Senden</button> <button type="button" class="btn btn-default" onclick="{ skip }" >Skip</button> <form> </div> <div class="panel-footer"> <img class="letterimg" riot-src="{ current.inlineimage }"> </div> </div> </div>', function(opts) {
     var me = this;
     var socket;
-
     var me = this;
+    var inputOrder = ['id','zipCode','street','housenumber','housenumberExtension'];
     me.current = window.app.current;
     me.on('mount update unmount', function(eventName) {
       me.current = window.app.current;
@@ -158,18 +159,56 @@ riot.tag('letter', '<div class="col-md-12"> <div class="panel panel-success"> <d
       riot.update();
     }.bind(this);
 
+    this.keypress = function(e) {
+      var index
+      if (e.which === 13){
+        index = inputOrder.indexOf(e.target.name);
+        if (index<inputOrder.length-1){
+          index++;
+        }else{
+          index=0;
+        }
+        this.letterform[inputOrder[index]].focus()
+      }
+      console.log(e);
+    }.bind(this);
+
   
 });
 
-riot.tag('login', '<div class="col-md-12"> <div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Anmelden</h3> </div> <div class="panel-body"> <form id="loginform"> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Login</span> <input value="{ login }" name="login" type="text" class="form-control" placeholder="Login" aria-describedby="basic-addon1"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Passwort</span> <input value="{ password }" name="password" type="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1"> </div> <button type="button" class="btn btn-default" onclick="{ submit }" >Senden</button> <form> </div> </div> </div>', function(opts) {
-    this.login = ""
-    this.password = ""
+riot.tag('login', '<div class="col-md-12"> <div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Anmelden</h3> </div> <div class="panel-body"> <form id="loginform"> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Login</span> <input value="{ login }" name="login" type="text" class="form-control" placeholder="Login" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Passwort</span> <input value="{ password }" name="password" type="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <button type="button" class="btn btn-default" onclick="{ submit }" >Senden</button> <form> </div> </div> </div>', function(opts) {
+    var inputOrder = ['login','password'];
+    var me = this;
+    me.login = ""
+    me.password = ""
     this.submit = function(e) {
+      window.app.setState('wait');
       window.app.socket.emit('login',{
-        login: this.loginform.login.value,
-        password: this.loginform.password.value
+        login: me.loginform.login.value,
+        password: me.loginform.password.value
       })
+
     }.bind(this);
+
+    this.keypress = function(e) {
+      var index;
+      if (e.which === 13){
+        index = inputOrder.indexOf(e.target.name);
+        if (index<inputOrder.length-1){
+          index++;
+        }else{
+          index=0;
+          me.submit(e);
+        }
+        me.loginform[inputOrder[index]].focus()
+      }
+      return true;
+
+    }.bind(this);
+
+    me.on('mount', function(eventName) {
+      me.loginform[inputOrder[0]].focus();
+    })
   
 });
 
