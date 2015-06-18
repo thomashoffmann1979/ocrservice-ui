@@ -10,27 +10,62 @@
         <form id="letterform">
           <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">ID</span>
-            <input id='id' value={ current.id } type="text" class="form-control" placeholder="ID" aria-describedby="basic-addon1">
+            <input
+              name='id'
+              value={ current.id }
+              type="text"
+              class="form-control"
+              placeholder="ID"
+              aria-describedby="basic-addon1"
+              onkeypress={keypress}>
           </div>
 
           <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">PLZ</span>
-            <input id='zipCode' value={ current.zipCode } type="number" class="form-control" placeholder="PLZ" aria-describedby="basic-addon1">
+            <input
+              name='zipCode'
+              value={ current.zipCode }
+              type="number"
+              class="form-control"
+              placeholder="PLZ"
+              aria-describedby="basic-addon1"
+              onkeypress={keypress}>
           </div>
 
           <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">Strasse</span>
-            <input id='street' value={ current.street } type="text" class="form-control" placeholder="Strasse" aria-describedby="basic-addon1">
+            <input
+              name='street'
+              value={ current.street }
+              type="text"
+              class="form-control"
+              placeholder="Strasse"
+              aria-describedby="basic-addon1"
+              onkeypress={keypress}>
           </div>
 
           <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">Hausnummer</span>
-            <input id='housenumber' value={ current.housenumber } type="text" class="form-control" placeholder="Hausnummer" aria-describedby="basic-addon1">
+            <input
+              name='housenumber'
+              value={ current.housenumber }
+              type="text"
+              class="form-control"
+              placeholder="Hausnummer"
+              aria-describedby="basic-addon1"
+              onkeypress={keypress}>
           </div>
 
           <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">Hausnummer Zusatz</span>
-            <input id='housenumberExtension' value={ current.housenumberExtension } type="text" class="form-control" placeholder="Hausnummer" aria-describedby="basic-addon1">
+            <input
+              name='housenumberExtension'
+              value={ current.housenumberExtension }
+              type="text"
+              class="form-control"
+              placeholder="Hausnummer"
+              aria-describedby="basic-addon1"
+              onkeypress={keypress}>
           </div>
 
           <button type="button" class="btn btn-default" onclick={ submit } >Senden</button>
@@ -47,8 +82,8 @@
   <script>
     var me = this;
     var socket;
-
     var me = this;
+    var inputOrder = ['id','zipCode','street','housenumber','housenumberExtension'];
     me.current = window.app.current;
     me.on('mount update unmount', function(eventName) {
       me.current = window.app.current;
@@ -76,6 +111,20 @@
       }
       window.app.socket.emit('setbad',data);
       riot.update();
+    }
+
+    keypress(e){
+      var index
+      if (e.which === 13){
+        index = inputOrder.indexOf(e.target.name);
+        if (index<inputOrder.length-1){
+          index++;
+        }else{
+          index=0;
+        }
+        this.letterform[inputOrder[index]].focus()
+      }
+      console.log(e);
     }
 
   </script>
