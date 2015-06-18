@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+
+var fs = require('fs'),
+    program = require('commander'),
+    pjson = require('../package.json'),
+    path =  require('path'),
+    os = require('os'),
+    spawn = require('child_process').spawn;
+
+var exdendedHelp = function(){
+    var examples = [];
+    console.log(examples.join("\n"));
+}
+
+program
+  .version(pjson.version)
+  .description('ocrservice-ui')
+  .usage('[options]')
+  .option('--refresh', 'start the program with recompiled source')
+  .on('--help', exdendedHelp)
+  .parse(process.argv);
+
+if (program.refresh){
+  child = spawn("riot",["ui/tags","ui/js/all.js"],{cwd: path.join(__dirname,'..')});
+}
+var program_name = 'nwjs';
+switch (os.platform()){
+case 'darwin':
+  program_name='nwjs/nwjs.app/Contents/MacOS/nwjs';
+  break;
+case 'linux':
+  program_name='nwjs/nw';
+  break;
+case 'windows':
+  program_name='nwjs/nw.exe';
+  break;
+}
+
+child = spawn(program_name,
+    ["."],
+    {
+    cwd: path.join(__dirname,'..'),
+    stdio: [
+      0, // use parents stdin for child
+      'pipe', // pipe child's stdout to parent
+      'pipe' // direct child's stderr to a file
+    ]
+    }
+);
