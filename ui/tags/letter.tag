@@ -11,10 +11,12 @@
               value={ current.id }
               type="text"
               name="id"
+
               class="form-control"
               id="inputID"
               placeholder="Login"
               onkeypress={keypress}
+              onblur={check}
               >
           </div>
         </div>
@@ -28,8 +30,9 @@
               name="zipCode"
               class="form-control"
               id="inputZipCode"
-              placeholder="Login"
+              placeholder="PLZ"
               onkeypress={keypress}
+              onblur={check}
               >
           </div>
         </div>
@@ -46,14 +49,15 @@
               class="form-control"
               placeholder="Strasse"
               id="inputStreet"
-              onkeypress={keypress}>
+              onkeypress={keypress}
+              onblur={check}>
           </div>
         </div>
 
 
         <div class="form-group">
 
-          <label for="inputHousenumber" class="col-sm-2 control-label">HN/Zusatz</label>
+          <label for="inputHousenumber" class="col-sm-2 control-label">HN</label>
           <div class="col-sm-7">
             <input
               name='housenumber'
@@ -62,7 +66,8 @@
               class="form-control"
               placeholder="Hausnummer"
               id="inputHousenumber"
-              onkeypress={keypress}>
+              onkeypress={keypress}
+              onblur={check}>
           </div>
           <div class="col-sm-3">
             <input
@@ -71,7 +76,8 @@
               type="text"
               class="form-control"
               placeholder="Hausnummer"
-              onkeypress={keypress}>
+              onkeypress={keypress}
+              onblur={check}>
           </div>
         </div>
 
@@ -79,14 +85,32 @@
 
       <div class="col-md-4">
 
-                    <button type="button" class="btn btn-default" onclick={ submit } >Senden</button>
-                    <button type="button" class="btn btn-default" onclick={ skip } >Skip</button>
-                    <button type="button" class="btn btn-default" onclick={ bad } >Bad</button>
+
+        <ul>
+          <li each ={currentBoxes}>SG{sortiergang} SF{sortierfach}</li>
+        </ul>
+
+        <br/>
+        <button accesskey="s"
+          type="button"
+          class="btn btn-{currentBoxesOk?'success':'default'}"
+          onclick={ submit }
+          >Speicher [S]</button>
+        <button
+          accesskey="n"
+          type="button"
+          class="btn btn-info"
+          onclick={ skip } >Skip [N]</button>
+        <button accesskey="b"
+          type="button"
+          class="btn btn-warning"
+          onclick={ bad } >Bad [B]</button>
       </div>
 
 
     </div>
     <form>
+    <br/>
   </div>
 
   <div class="container" >
@@ -101,25 +125,60 @@
     var me = this;
     var inputOrder = ['id','zipCode','street','housenumber','housenumberExtension'];
     me.current = window.app.current;
+    me.currentBoxes = window.app.currentBoxes;
+    me.currentBoxesOk = window.app.currentBoxesOk;
+
+    window.app.on('new',function(){
+      me.letterform[inputOrder[0]].focus();
+      me.letterform[inputOrder[0]].select();
+
+      me.check({});
+    });
+
     me.on('mount update unmount', function(eventName) {
       var img= window.document.getElementById('image');
       if (img!==null){
         img.height = $(window).height() - $('#fluidform').height() - 100;
       }
       me.current = window.app.current;
+      me.currentBoxes = window.app.currentBoxes;
+      me.currentBoxesOk = window.app.currentBoxesOk;
+      if (eventName==='mount'){
+        try{
+          me.letterform[inputOrder[0]].focus();
+          me.letterform[inputOrder[0]].select();
+        }catch(e){
+
+        }
+      }
     });
 
 
     submit(e){
-      me.message = "Senden ...";
-      data = {
+      if (me.currentBoxesOk===true){
+        me.message = "Senden ...";
+        var data = {
+          id: this.letterform.id.value,
+          zipCode: this.letterform.zipCode.value,
+          street: this.letterform.street.value,
+          housenumber: this.letterform.housenumber.value,
+          housenumberExtension: this.letterform.housenumberExtension.value
+        }
+        window.app.socket.emit('save',data);
+        riot.update();
+      }
+    }
+
+    check(e){
+      var data = {
         id: this.letterform.id.value,
         zipCode: this.letterform.zipCode.value,
         street: this.letterform.street.value,
-        housenumber: this.letterform.housenumber.value
+        housenumber: this.letterform.housenumber.value,
+        housenumberExtension: this.letterform.housenumberExtension.value
       }
-      socket.emit('save',data);
-      riot.update();
+      console.log('check',data);
+      window.app.socket.emit('check',data);
     }
 
 
@@ -152,9 +211,11 @@
         }else{
           index=0;
         }
-        this.letterform[inputOrder[index]].focus()
+        this.letterform[inputOrder[index]].focus();
+        this.letterform[inputOrder[index]].select();
       }
       console.log(e);
+      return true;
     }
 
   </script>

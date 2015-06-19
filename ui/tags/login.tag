@@ -63,14 +63,17 @@
     var me = this;
     me.login = localStorage.getItem("login")
     me.password = localStorage.getItem("password")
-    if me.login==null
+    if (me.login===null){
       me.login = ""
-    if me.password==null
+    }
+    if (me.password===null){
       me.password = ""
+    }
 
-    if me.login.length>0
-      me.loginform.remember.checked = true
-      
+    if (me.login.length>0){
+      me.loginform.remember.checked = true;
+    }
+
     submit(e){
 
       localStorage.removeItem("login");
@@ -84,7 +87,8 @@
       window.app.setState('wait');
       window.app.socket.emit('login',{
         login: me.loginform.login.value,
-        password: me.loginform.password.value
+        password: me.loginform.password.value,
+        mywidth: screen.width
       })
 
     }

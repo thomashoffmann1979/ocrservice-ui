@@ -32,7 +32,7 @@
 
 
 
-  
+
 
       <wait class="{ wait ? 'show' : 'hide' }"></wait>
       <login class="{ login ? 'show' : 'hide' }"></login>
@@ -85,6 +85,7 @@
       me.socket.on('loginRequired', me.socketLoginRequired.bind(me) );
       me.socket.on('loginError', me.socketLoginError.bind(me) );
       me.socket.on('letter', me.socketLetter.bind(me) );
+      me.socket.on('checked', me.socketChecked.bind(me) );
       /*
 
 
@@ -115,11 +116,51 @@
     }
 
     socketLetter(msg){
-      console.log(msg);
+      console.log('socketLetter',msg);
+      
       me.loggedin=true;
       me.message = "Sendung erfassen";
+
+      me.current.street = "";
+      me.current.id = "";
+      me.current.zipCode = "";
+      me.current.housenumber = "";
+      me.current.housenumberExtension = "";
+
+      me.currentBoxesOk=false;
+      me.currentBoxes=[];
+
       me.current = msg;
+
+      me.currentLoaded = true;
       me.setState('letter');
+      me.trigger('new');
+      riot.update();
+    }
+
+    socketChecked(msg){
+      if (msg.length>0){
+        if (typeof msg[0].box!=='undefined'){
+          if (me.current.id == msg[0].id){
+            if (msg[0].box.length>0){
+              me.currentBoxes = msg[0].box;
+              me.currentBoxesOk = false;
+
+              if (msg[0].box.length===1){
+
+                me.currentBoxesOk = true;
+
+                me.current.street = msg[0].street;
+                me.current.zipCode = msg[0].zipCode;
+                me.current.town = msg[0].town;
+                me.current.housenumber = msg[0].housenumber;
+                me.current.housenumberExtension = msg[0].housenumberExtension;
+              }
+            }
+          }
+        }
+      }
+      //console.log('me.currentBoxesOk',me.currentBoxesOk);
       riot.update();
     }
 
@@ -130,7 +171,10 @@
       riot.update();
     }
 
-    me.current;
+    me.current = {};
+    me.currentBoxes=[];
+    me.currentBoxesOk=false;
+    me.currentLoaded =false;
     me.socket;
     me.setState('wait');
   </script>
