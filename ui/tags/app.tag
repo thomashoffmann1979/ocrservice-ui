@@ -18,7 +18,10 @@
           <li><a href="#" onclick={ inspect }>Inspect</a></li>
           <li><a href="#" onclick={ exit }>Exit</a></li>
           <li>
-            <a href="#"> <i class="fa fa-wifi icon-{ connected ? (loggedin?'green':'yellow') : 'red' }"></i>{message}</a>
+            <a href="#">
+              <i class="fa fa-wifi icon-{ connected ? (loggedin?'green':'yellow') : 'red' }"></i>
+              &nbsp;{message}
+            </a>
           </li>
         </ul>
 
@@ -54,7 +57,6 @@
       me.state = 'login';
       riot.update();
     },5000);
-    //riot.route('customers/267393/edit')
 
     inspect(e){
       require('nw.gui').Window.get().showDevTools();
@@ -84,16 +86,12 @@
       me.socket.on('disconnect', me.socketDisconnect.bind(me) );
       me.socket.on('loginRequired', me.socketLoginRequired.bind(me) );
       me.socket.on('loginError', me.socketLoginError.bind(me) );
+      me.socket.on('loginSuccess', me.socketLoginSuccess.bind(me) );
+
       me.socket.on('letter', me.socketLetter.bind(me) );
       me.socket.on('checked', me.socketChecked.bind(me) );
-      /*
+      me.socket.on('empty', me.socketEmpty.bind(me) );
 
-
-      socket.on('sendings', me.socketSendings.bind(me) );
-      socket.on('remove', me.socketRemove.bind(me) );
-      socket.on('do', me.socketDo.bind(me) )
-      socket.on('work', me.socketWork.bind(me) );
-      */
     }
 
     socketConnect(){
@@ -115,12 +113,31 @@
 
     }
 
+    socketEmpty(msg){
+      me.message = "Warte auf Sendung ...";
+      riot.update();
+
+    }
+
+    setInterval(function(){
+      if (me.message == "Warte auf Sendung ..."){
+        window.app.socket.emit('send',true);
+      }
+    },5000);
+
+    socketLoginSuccess(msg){
+      me.message = "Warte auf Sendung ...";
+      riot.update();
+    }
+
     socketLetter(msg){
       console.log('socketLetter',msg);
-      
+
       me.loggedin=true;
       me.message = "Sendung erfassen";
-
+      if (me.current===null){
+        me.current={};
+      }
       me.current.street = "";
       me.current.id = "";
       me.current.zipCode = "";
@@ -160,7 +177,6 @@
           }
         }
       }
-      //console.log('me.currentBoxesOk',me.currentBoxesOk);
       riot.update();
     }
 

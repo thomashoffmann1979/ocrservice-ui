@@ -142,7 +142,12 @@
       }
       me.current = window.app.current;
       me.currentBoxes = window.app.currentBoxes;
-      me.currentBoxesOk = window.app.currentBoxesOk;
+      if (this.letterform.id.value.indexOf('.')==-1){
+        me.currentBoxesOk = window.app.currentBoxesOk;
+      }else{
+        me.currentBoxesOk = false;
+      }
+
       if (eventName==='mount'){
         try{
           me.letterform[inputOrder[0]].focus();
@@ -158,12 +163,17 @@
       if (me.currentBoxesOk===true){
         me.message = "Senden ...";
         var data = {
-          id: this.letterform.id.value,
+          code: this.letterform.id.value,
+          id: me.current.id,
+          box: me.currentBoxes[0],
+          town: this.current.town,
           zipCode: this.letterform.zipCode.value,
           street: this.letterform.street.value,
           housenumber: this.letterform.housenumber.value,
           housenumberExtension: this.letterform.housenumberExtension.value
         }
+        window.app.message = "Senden ...";
+        window.app.setState('wait');
         window.app.socket.emit('save',data);
         riot.update();
       }
@@ -171,7 +181,8 @@
 
     check(e){
       var data = {
-        id: this.letterform.id.value,
+        code: this.letterform.id.value,
+        id: me.current.id,
         zipCode: this.letterform.zipCode.value,
         street: this.letterform.street.value,
         housenumber: this.letterform.housenumber.value,
@@ -209,6 +220,11 @@
         if (index<inputOrder.length-1){
           index++;
         }else{
+          if (me.currentBoxesOk===true){
+            me.submit(e);
+          }else{
+            me.skip(e);
+          }
           index=0;
         }
         this.letterform[inputOrder[index]].focus();

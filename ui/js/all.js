@@ -1,4 +1,4 @@
-riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class="container-fluid"> <div class="navbar-header"> <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-collapse-1"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> <a class="navbar-brand" href="#"><i class="fa fa-envelope-o fa-lg"></i></a> </div> <div class="collapse navbar-collapse" id="bs-collapse-1"> <discovery></discovery> <ul class="nav navbar-nav pull-right"> <li><a href="#" onclick="{ inspect }">Inspect</a></li> <li><a href="#" onclick="{ exit }">Exit</a></li> <li> <a href="#"> <i class="fa fa-wifi icon-{ connected ? (loggedin?\'green\':\'yellow\') : \'red\' }"></i>{message}</a> </li> </ul> </div> </div> </nav> <br> <br> <br> <wait class="{ wait ? \'show\' : \'hide\' }"></wait> <login class="{ login ? \'show\' : \'hide\' }"></login> <letter class="{ letter ? \'show\' : \'hide\' }"></letter> </div> </div>', function(opts) {
+riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class="container-fluid"> <div class="navbar-header"> <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-collapse-1"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> <a class="navbar-brand" href="#"><i class="fa fa-envelope-o fa-lg"></i></a> </div> <div class="collapse navbar-collapse" id="bs-collapse-1"> <discovery></discovery> <ul class="nav navbar-nav pull-right"> <li><a href="#" onclick="{ inspect }">Inspect</a></li> <li><a href="#" onclick="{ exit }">Exit</a></li> <li> <a href="#"> <i class="fa fa-wifi icon-{ connected ? (loggedin?\'green\':\'yellow\') : \'red\' }"></i> &nbsp;{message} </a> </li> </ul> </div> </div> </nav> <br> <br> <br> <wait class="{ wait ? \'show\' : \'hide\' }"></wait> <login class="{ login ? \'show\' : \'hide\' }"></login> <letter class="{ letter ? \'show\' : \'hide\' }"></letter> </div> </div>', function(opts) {
 
     var states = ['wait','login','letter'];
     for(var i=0;i<states.length;i++){
@@ -11,7 +11,6 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
       me.state = 'login';
       riot.update();
     },5000);
-
 
     this.inspect = function(e) {
       require('nw.gui').Window.get().showDevTools();
@@ -41,9 +40,12 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
       me.socket.on('disconnect', me.socketDisconnect.bind(me) );
       me.socket.on('loginRequired', me.socketLoginRequired.bind(me) );
       me.socket.on('loginError', me.socketLoginError.bind(me) );
+      me.socket.on('loginSuccess', me.socketLoginSuccess.bind(me) );
+
       me.socket.on('letter', me.socketLetter.bind(me) );
       me.socket.on('checked', me.socketChecked.bind(me) );
-      
+      me.socket.on('empty', me.socketEmpty.bind(me) );
+
     }.bind(this);
 
     this.socketConnect = function() {
@@ -65,12 +67,31 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
 
     }.bind(this);
 
+    this.socketEmpty = function(msg) {
+      me.message = "Warte auf Sendung ...";
+      riot.update();
+
+    }.bind(this);
+
+    setInterval(function(){
+      if (me.message == "Warte auf Sendung ..."){
+        window.app.socket.emit('send',true);
+      }
+    },5000);
+
+    this.socketLoginSuccess = function(msg) {
+      me.message = "Warte auf Sendung ...";
+      riot.update();
+    }.bind(this);
+
     this.socketLetter = function(msg) {
       console.log('socketLetter',msg);
-      
+
       me.loggedin=true;
       me.message = "Sendung erfassen";
-
+      if (me.current===null){
+        me.current={};
+      }
       me.current.street = "";
       me.current.id = "";
       me.current.zipCode = "";
@@ -110,7 +131,6 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
           }
         }
       }
-
       riot.update();
     }.bind(this);
 
@@ -192,7 +212,12 @@ riot.tag('letter', '<div class="container-fluid" id="fluidform"> <form id="lette
       }
       me.current = window.app.current;
       me.currentBoxes = window.app.currentBoxes;
-      me.currentBoxesOk = window.app.currentBoxesOk;
+      if (this.letterform.id.value.indexOf('.')==-1){
+        me.currentBoxesOk = window.app.currentBoxesOk;
+      }else{
+        me.currentBoxesOk = false;
+      }
+
       if (eventName==='mount'){
         try{
           me.letterform[inputOrder[0]].focus();
@@ -208,12 +233,17 @@ riot.tag('letter', '<div class="container-fluid" id="fluidform"> <form id="lette
       if (me.currentBoxesOk===true){
         me.message = "Senden ...";
         var data = {
-          id: this.letterform.id.value,
+          code: this.letterform.id.value,
+          id: me.current.id,
+          box: me.currentBoxes[0],
+          town: this.current.town,
           zipCode: this.letterform.zipCode.value,
           street: this.letterform.street.value,
           housenumber: this.letterform.housenumber.value,
           housenumberExtension: this.letterform.housenumberExtension.value
         }
+        window.app.message = "Senden ...";
+        window.app.setState('wait');
         window.app.socket.emit('save',data);
         riot.update();
       }
@@ -221,7 +251,8 @@ riot.tag('letter', '<div class="container-fluid" id="fluidform"> <form id="lette
 
     this.check = function(e) {
       var data = {
-        id: this.letterform.id.value,
+        code: this.letterform.id.value,
+        id: me.current.id,
         zipCode: this.letterform.zipCode.value,
         street: this.letterform.street.value,
         housenumber: this.letterform.housenumber.value,
@@ -259,6 +290,11 @@ riot.tag('letter', '<div class="container-fluid" id="fluidform"> <form id="lette
         if (index<inputOrder.length-1){
           index++;
         }else{
+          if (me.currentBoxesOk===true){
+            me.submit(e);
+          }else{
+            me.skip(e);
+          }
           index=0;
         }
         this.letterform[inputOrder[index]].focus();
@@ -296,7 +332,7 @@ riot.tag('login', '<div class="container-fluid"> <div class="row"> <div class="c
         localStorage.setItem("login",me.loginform.login.value);
         localStorage.setItem("password",me.loginform.password.value);
       }
-
+      
       window.app.setState('wait');
       window.app.socket.emit('login',{
         login: me.loginform.login.value,

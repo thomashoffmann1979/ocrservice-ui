@@ -83,7 +83,7 @@
         localStorage.setItem("login",me.loginform.login.value);
         localStorage.setItem("password",me.loginform.password.value);
       }
-
+      
       window.app.setState('wait');
       window.app.socket.emit('login',{
         login: me.loginform.login.value,
