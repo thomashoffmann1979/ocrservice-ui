@@ -1,4 +1,4 @@
-riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class="container-fluid"> <div class="navbar-header"> <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-collapse-1"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> <a class="navbar-brand" href="#"><i class="fa fa-envelope-o fa-lg"></i></a> </div> <div class="collapse navbar-collapse" id="bs-collapse-1"> <discovery></discovery> <ul class="nav navbar-nav pull-right"> <li><a href="#" onclick="{ inspect }">Inspect</a></li> <li><a href="#" onclick="{ exit }">Exit</a></li> <li> <a href="#"> <i class="fa fa-wifi icon-{ connected ? (loggedin?\'green\':\'yellow\') : \'red\' }"></i>{message}</a> </li> </ul> </div> </div> </nav> <br> <br> <br> <div class="container-fluid"> <div class="row"> <wait class="{ wait ? \'show\' : \'hide\' }"></wait> <login class="{ login ? \'show\' : \'hide\' }"></login> <letter class="{ letter ? \'show\' : \'hide\' }"></letter> </div> </div>', function(opts) {
+riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class="container-fluid"> <div class="navbar-header"> <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-collapse-1"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> <a class="navbar-brand" href="#"><i class="fa fa-envelope-o fa-lg"></i></a> </div> <div class="collapse navbar-collapse" id="bs-collapse-1"> <discovery></discovery> <ul class="nav navbar-nav pull-right"> <li><a href="#" onclick="{ inspect }">Inspect</a></li> <li><a href="#" onclick="{ exit }">Exit</a></li> <li> <a href="#"> <i class="fa fa-wifi icon-{ connected ? (loggedin?\'green\':\'yellow\') : \'red\' }"></i>{message}</a> </li> </ul> </div> </div> </nav> <br> <br> <br> <wait class="{ wait ? \'show\' : \'hide\' }"></wait> <login class="{ login ? \'show\' : \'hide\' }"></login> <letter class="{ letter ? \'show\' : \'hide\' }"></letter> </div> </div>', function(opts) {
 
     var states = ['wait','login','letter'];
     for(var i=0;i<states.length;i++){
@@ -125,13 +125,17 @@ riot.tag('discovery', '<ul class="nav navbar-nav"> <li each="{ serviceList }" > 
   
 });
 
-riot.tag('letter', '<div class="col-md-12"> <div class="panel panel-success"> <div class="panel-heading"> <h3 class="panel-title">Sendung erfassen</h3> </div> <div class="panel-body"> <form id="letterform"> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">ID</span> <input name="id" value="{ current.id }" type="text" class="form-control" placeholder="ID" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">PLZ</span> <input name="zipCode" value="{ current.zipCode }" type="number" class="form-control" placeholder="PLZ" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Strasse</span> <input name="street" value="{ current.street }" type="text" class="form-control" placeholder="Strasse" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Hausnummer</span> <input name="housenumber" value="{ current.housenumber }" type="text" class="form-control" placeholder="Hausnummer" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Hausnummer Zusatz</span> <input name="housenumberExtension" value="{ current.housenumberExtension }" type="text" class="form-control" placeholder="Hausnummer" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <button type="button" class="btn btn-default" onclick="{ submit }" >Senden</button> <button type="button" class="btn btn-default" onclick="{ skip }" >Skip</button> <form> </div> <div class="panel-footer"> <img class="letterimg" riot-src="{ current.inlineimage }"> </div> </div> </div>', function(opts) {
+riot.tag('letter', '<div class="container-fluid" id="fluidform"> <form id="letterform"> <div class="row"> <div class="col-md-4"> <div class="form-group"> <label for="inputID" class="col-sm-2 control-label">ID</label> <div class="col-sm-10"> <input value="{ current.id }" type="text" name="id" class="form-control" id="inputID" placeholder="Login" onkeypress="{keypress}" > </div> </div> <div class="form-group"> <label for="inputZipCode" class="col-sm-2 control-label">PLZ</label> <div class="col-sm-10"> <input value="{ current.zipCode }" type="text" name="zipCode" class="form-control" id="inputZipCode" placeholder="Login" onkeypress="{keypress}" > </div> </div> </div> <div class="col-md-4"> <div class="form-group"> <label for="inputStreet" class="col-sm-2 control-label">Straße</label> <div class="col-sm-10"> <input name="street" value="{ current.street }" type="text" class="form-control" placeholder="Strasse" id="inputStreet" onkeypress="{keypress}"> </div> </div> <div class="form-group"> <label for="inputHousenumber" class="col-sm-2 control-label">HN/Zusatz</label> <div class="col-sm-7"> <input name="housenumber" value="{ current.housenumber }" type="text" class="form-control" placeholder="Hausnummer" id="inputHousenumber" onkeypress="{keypress}"> </div> <div class="col-sm-3"> <input name="housenumberExtension" value="{ current.housenumberExtension }" type="text" class="form-control" placeholder="Hausnummer" onkeypress="{keypress}"> </div> </div> </div> <div class="col-md-4"> <button type="button" class="btn btn-default" onclick="{ submit }" >Senden</button> <button type="button" class="btn btn-default" onclick="{ skip }" >Skip</button> <button type="button" class="btn btn-default" onclick="{ bad }" >Bad</button> </div> </div> <form> </div> <div class="container" > <div class="row"> <img id="image" class="letterimg" height="300" riot-src="{ current.inlineimage }"> </div> </div>', function(opts) {
     var me = this;
     var socket;
     var me = this;
     var inputOrder = ['id','zipCode','street','housenumber','housenumberExtension'];
     me.current = window.app.current;
     me.on('mount update unmount', function(eventName) {
+      var img= window.document.getElementById('image');
+      if (img!==null){
+        img.height = $(window).height() - $('#fluidform').height() - 100;
+      }
       me.current = window.app.current;
     });
 
@@ -155,7 +159,17 @@ riot.tag('letter', '<div class="col-md-12"> <div class="panel panel-success"> <d
       data = {
         id: this.letterform.id.value
       }
-      window.app.socket.emit('setbad',data);
+      window.app.socket.emit('skip',data);
+      riot.update();
+    }.bind(this);
+
+    this.bad = function(e) {
+      window.app.message = "Senden ...";
+      window.app.setState('wait');
+      data = {
+        id: this.letterform.id.value
+      }
+      window.app.socket.emit('bad',data);
       riot.update();
     }.bind(this);
 
@@ -176,12 +190,21 @@ riot.tag('letter', '<div class="col-md-12"> <div class="panel panel-success"> <d
   
 });
 
-riot.tag('login', '<div class="col-md-12"> <div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Anmelden</h3> </div> <div class="panel-body"> <form id="loginform"> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Login</span> <input value="{ login }" name="login" type="text" class="form-control" placeholder="Login" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <div class="input-group"> <span class="input-group-addon" id="basic-addon1">Passwort</span> <input value="{ password }" name="password" type="password" class="form-control" placeholder="Password" aria-describedby="basic-addon1" onkeypress="{keypress}"> </div> <button type="button" class="btn btn-default" onclick="{ submit }" >Senden</button> <form> </div> </div> </div>', function(opts) {
+riot.tag('login', '<div class="container-fluid"> <div class="row"> <div class="col-md-12"> <div class="panel panel-default"> <div class="panel-heading"> <h3 class="panel-title">Anmelden</h3> </div> <div class="panel-body"> <form id="loginform"> <div class="form-group"> <label for="inputLogin" class="col-sm-2 control-label">Login</label> <div class="col-sm-10"> <input value="{ login }" type="text" name="login" class="form-control" id="inputLogin" placeholder="Login" onkeypress="{keypress}" > </div> </div> <div class="form-group"> <label for="inputPassword" class="col-sm-2 control-label">Passwort</label> <div class="col-sm-10"> <input value="{ password }" name="password" type="password" class="form-control" placeholder="Password" id="inputPassword" onkeypress="{keypress}"> </div> </div> <div class="form-group"> <div class="col-sm-offset-2 col-sm-10"> <div class="checkbox"> <label> <input name="remember" type="checkbox">merken </label> </div> </div> </div> <div class="form-group"> <div class="col-sm-offset-2 col-sm-10"> <button type="button" class="btn btn-default" onclick="{ submit }">Anmelden</button> </div> </div> <form> </div> </div> </div> </div> </div>', function(opts) {
     var inputOrder = ['login','password'];
     var me = this;
-    me.login = ""
-    me.password = ""
+    me.login = localStorage.getItem("login")
+    me.password = localStorage.getItem("password")
     this.submit = function(e) {
+
+      localStorage.removeItem("login");
+      localStorage.removeItem("password");
+
+      if(me.loginform.remember.checked){
+        localStorage.setItem("login",me.loginform.login.value);
+        localStorage.setItem("password",me.loginform.password.value);
+      }
+      
       window.app.setState('wait');
       window.app.socket.emit('login',{
         login: me.loginform.login.value,
@@ -212,7 +235,7 @@ riot.tag('login', '<div class="col-md-12"> <div class="panel panel-default"> <di
   
 });
 
-riot.tag('wait', '<div class="col-md-12 text-center"> <div class="timer-loader-{ connected ? \'green\' : \'red\' }"> Loading… </div> </div>', function(opts) {
+riot.tag('wait', '<div class="container-fluid"> <div class="row"> <div class="col-md-12 text-center"> <div class="timer-loader-{ connected ? \'green\' : \'red\' }"> Loading… </div> </div> </div> </div>', function(opts) {
     var me = this;
     me.connected = window.app.connected;
     me.on('mount update unmount', function(eventName) {

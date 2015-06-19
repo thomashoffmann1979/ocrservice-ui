@@ -32,8 +32,7 @@
 
 
 
-  <div class="container-fluid">
-    <div class="row">
+  
 
       <wait class="{ wait ? 'show' : 'hide' }"></wait>
       <login class="{ login ? 'show' : 'hide' }"></login>

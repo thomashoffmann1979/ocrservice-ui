@@ -1,81 +1,97 @@
 <letter>
+  <div class="container-fluid" id="fluidform">
+    <form id="letterform">
+    <div class="row">
 
-  <div class="col-md-12">
-
-    <div class="panel panel-success">
-      <div class="panel-heading">
-        <h3 class="panel-title">Sendung erfassen</h3>
-      </div>
-      <div class="panel-body">
-        <form id="letterform">
-          <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1">ID</span>
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="inputID" class="col-sm-2 control-label">ID</label>
+          <div class="col-sm-10">
             <input
-              name='id'
               value={ current.id }
               type="text"
+              name="id"
               class="form-control"
-              placeholder="ID"
-              aria-describedby="basic-addon1"
-              onkeypress={keypress}>
+              id="inputID"
+              placeholder="Login"
+              onkeypress={keypress}
+              >
           </div>
+        </div>
 
-          <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1">PLZ</span>
+        <div class="form-group">
+          <label for="inputZipCode" class="col-sm-2 control-label">PLZ</label>
+          <div class="col-sm-10">
             <input
-              name='zipCode'
               value={ current.zipCode }
-              type="number"
+              type="text"
+              name="zipCode"
               class="form-control"
-              placeholder="PLZ"
-              aria-describedby="basic-addon1"
-              onkeypress={keypress}>
+              id="inputZipCode"
+              placeholder="Login"
+              onkeypress={keypress}
+              >
           </div>
+        </div>
 
-          <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1">Strasse</span>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="inputStreet" class="col-sm-2 control-label">Straße</label>
+          <div class="col-sm-10">
             <input
               name='street'
               value={ current.street }
               type="text"
               class="form-control"
               placeholder="Strasse"
-              aria-describedby="basic-addon1"
+              id="inputStreet"
               onkeypress={keypress}>
           </div>
+        </div>
 
-          <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1">Hausnummer</span>
+
+        <div class="form-group">
+
+          <label for="inputHousenumber" class="col-sm-2 control-label">HN/Zusatz</label>
+          <div class="col-sm-7">
             <input
               name='housenumber'
               value={ current.housenumber }
               type="text"
               class="form-control"
               placeholder="Hausnummer"
-              aria-describedby="basic-addon1"
+              id="inputHousenumber"
               onkeypress={keypress}>
           </div>
-
-          <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1">Hausnummer Zusatz</span>
+          <div class="col-sm-3">
             <input
               name='housenumberExtension'
               value={ current.housenumberExtension }
               type="text"
               class="form-control"
               placeholder="Hausnummer"
-              aria-describedby="basic-addon1"
               onkeypress={keypress}>
           </div>
+        </div>
 
-          <button type="button" class="btn btn-default" onclick={ submit } >Senden</button>
-          <button type="button" class="btn btn-default" onclick={ skip } >Skip</button>
+      </div>
 
-        <form>
+      <div class="col-md-4">
+
+                    <button type="button" class="btn btn-default" onclick={ submit } >Senden</button>
+                    <button type="button" class="btn btn-default" onclick={ skip } >Skip</button>
+                    <button type="button" class="btn btn-default" onclick={ bad } >Bad</button>
       </div>
-      <div class="panel-footer">
-        <img class="letterimg" src={ current.inlineimage } />
-      </div>
+
+
+    </div>
+    <form>
+  </div>
+
+  <div class="container" >
+    <div class="row">
+      <img id="image" class="letterimg" height="300" src={ current.inlineimage } />
     </div>
   </div>
 
@@ -86,6 +102,10 @@
     var inputOrder = ['id','zipCode','street','housenumber','housenumberExtension'];
     me.current = window.app.current;
     me.on('mount update unmount', function(eventName) {
+      var img= window.document.getElementById('image');
+      if (img!==null){
+        img.height = $(window).height() - $('#fluidform').height() - 100;
+      }
       me.current = window.app.current;
     });
 
@@ -109,7 +129,17 @@
       data = {
         id: this.letterform.id.value
       }
-      window.app.socket.emit('setbad',data);
+      window.app.socket.emit('skip',data);
+      riot.update();
+    }
+
+    bad(e){
+      window.app.message = "Senden ...";
+      window.app.setState('wait');
+      data = {
+        id: this.letterform.id.value
+      }
+      window.app.socket.emit('bad',data);
       riot.update();
     }
 

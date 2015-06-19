@@ -1,9 +1,13 @@
 <wait>
+  <div class="container-fluid">
+    <div class="row">
   <div class="col-md-12 text-center">
     <div class="timer-loader-{ connected ? 'green' : 'red' }">
       Loading…
     </div>
   </div>
+  </div>
+</div>
   <script>
     var me = this;
     me.connected = window.app.connected;
