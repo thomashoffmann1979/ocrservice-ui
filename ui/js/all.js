@@ -6,7 +6,6 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
     }
     var me = this;
 
-
     setTimeout(function(){
       me.state = 'login';
       riot.update();
@@ -31,6 +30,7 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
       this[state] = true;
       riot.update();
     }.bind(this);
+
     this.switchToAddress = function(url) {
       if (typeof me.socket!=='undefined'){
         me.socket.close()
@@ -159,6 +159,10 @@ riot.tag('discovery', '<ul class="nav navbar-nav"> <li each="{ serviceList }" > 
 
     me.discovery.on('found',function(data,remote){
       if (data.type === 'ocrservice'){
+        if (remote.address==='127.0.0.1'){
+          remote.address = 'localhost';
+        }
+
         if (typeof me.serviceHash[ remote.address ]=='undefined'){
           me.serviceHash[ remote.address ] = data.port;
           data.address = remote.address;

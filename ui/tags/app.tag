@@ -81,7 +81,7 @@
       if (typeof me.socket!=='undefined'){
         me.socket.close()
       }
-      me.socket = io(url);
+      me.socket = io(url,{ transports: [ 'websocket' ] });
       me.socket.on('connect', me.socketConnect.bind(me) );
       me.socket.on('disconnect', me.socketDisconnect.bind(me) );
       me.socket.on('loginRequired', me.socketLoginRequired.bind(me) );
