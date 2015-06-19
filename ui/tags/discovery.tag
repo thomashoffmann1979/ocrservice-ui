@@ -36,6 +36,7 @@
       if (address==='127.0.0.1'){
         address = 'localhost';
       }
+      alert(address);
       window.app.switchToAddress( 'http://'+address+':'+me.serviceHash[ address ] )
     }
 
