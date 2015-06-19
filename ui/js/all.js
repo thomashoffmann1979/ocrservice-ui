@@ -35,7 +35,7 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
       if (typeof me.socket!=='undefined'){
         me.socket.close()
       }
-      me.socket = io(url);
+      me.socket = io(url,{ transports: [ 'websocket' ] });
       me.socket.on('connect', me.socketConnect.bind(me) );
       me.socket.on('disconnect', me.socketDisconnect.bind(me) );
       me.socket.on('loginRequired', me.socketLoginRequired.bind(me) );
@@ -153,15 +153,13 @@ riot.tag('app', '<nav class="navbar navbar-default navbar-fixed-top"> <div class
 riot.tag('discovery', '<ul class="nav navbar-nav"> <li each="{ serviceList }" > <a href="#" onclick="{ parent.switchTo }" data-address="{address}">{address}</a> </li> </ul>', function(opts) {
 
     var me = this;
-    me.discovery = new updfindme.Discovery(32145);
+    me.discovery = new udpfindme.Discovery(32145);
     me.serviceList = [];
     me.serviceHash = {};
 
     me.discovery.on('found',function(data,remote){
       if (data.type === 'ocrservice'){
-        if (remote.address==='127.0.0.1'){
-          remote.address = 'localhost';
-        }
+
 
         if (typeof me.serviceHash[ remote.address ]=='undefined'){
           me.serviceHash[ remote.address ] = data.port;
