@@ -33,6 +33,9 @@
     me.discovery.discover();
 
     goTo(address){
+      if (address==='127.0.0.1'){
+        address = 'localhost';
+      }
       window.app.switchToAddress( 'http://'+address+':'+me.serviceHash[ address ] )
     }
 

@@ -52,7 +52,6 @@
     }
     var me = this;
 
-
     setTimeout(function(){
       me.state = 'login';
       riot.update();
@@ -77,6 +76,7 @@
       this[state] = true;
       riot.update();
     }
+
     switchToAddress(url){
       if (typeof me.socket!=='undefined'){
         me.socket.close()
