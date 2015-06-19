@@ -43,6 +43,7 @@
   "dependencies": {
     "commander": "2.8.0",
     "udpfindme": "*",
+    "nw": "*",
     "colors": "*",
     "less": "*"
   }
